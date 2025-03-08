@@ -37,6 +37,7 @@ const MeetingRoom = ({ darkMode, toggleDarkMode }) => {
   const [showControls, setShowControls] = useState(true);
   const [showChat, setShowChat] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isHovered, setIsHovered] = useState(false); // New state
 
   useEffect(() => {
     // Simulate loading participants
@@ -45,7 +46,9 @@ const MeetingRoom = ({ darkMode, toggleDarkMode }) => {
 
     // Hide controls after 5 seconds of inactivity
     const timer = setTimeout(() => {
-      setShowControls(false);
+      if (!isHovered) {
+        setShowControls(false);
+      }
     }, 5000);
 
     // Check if screen width is less than 468px
@@ -63,17 +66,28 @@ const MeetingRoom = ({ darkMode, toggleDarkMode }) => {
       clearTimeout(timer);
       window.removeEventListener("resize", checkScreenSize);
     };
-  }, []);
+  }, [isHovered]); // Add isHovered as a dependency
 
   const handleMouseMove = () => {
     setShowControls(true);
 
-    // Reset the timer
-    const timer = setTimeout(() => {
-      setShowControls(false);
-    }, 5000);
+    // Reset the timer only if the mouse is not over the controls
+    if (!isHovered) {
+      const timer = setTimeout(() => {
+        setShowControls(false);
+      }, 5000);
 
-    return () => clearTimeout(timer);
+      return () => clearTimeout(timer);
+    }
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setShowControls(false); // Optionally hide the controls immediately when the mouse leaves
   };
 
   const toggleMute = () => setIsMuted(!isMuted);
@@ -99,8 +113,16 @@ const MeetingRoom = ({ darkMode, toggleDarkMode }) => {
     >
       {participant.isVideoOff ? (
         <div className="bg-gray-700 dark:bg-gray-500 w-full h-full flex items-center justify-center">
-          <div className={`${isFocused ? "w-24 h-24" : "w-16 h-16"} ${isMobile ? "w-12 h-12" : ""} rounded-full bg-blue-500 flex items-center justify-center`}>
-            <span className={`text-white ${isFocused ? "text-3xl" : "text-xl"} ${isMobile ? "text-lg" : ""} font-medium`}>
+          <div
+            className={`${isFocused ? "w-24 h-24" : "w-16 h-16"} ${
+              isMobile ? "w-12 h-12" : ""
+            } rounded-full bg-blue-500 flex items-center justify-center`}
+          >
+            <span
+              className={`text-white ${isFocused ? "text-3xl" : "text-xl"} ${
+                isMobile ? "text-lg" : ""
+              } font-medium`}
+            >
               {participant.initials}
             </span>
           </div>
@@ -109,22 +131,34 @@ const MeetingRoom = ({ darkMode, toggleDarkMode }) => {
         <div className="bg-gray-800 w-full h-full relative">
           {/* Fake video placeholder */}
           <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
-            <span className={`text-white opacity-50 ${isFocused ? "text-2xl" : ""} ${isMobile ? "text-sm" : ""}`}>
+            <span
+              className={`text-white opacity-50 ${
+                isFocused ? "text-2xl" : ""
+              } ${isMobile ? "text-sm" : ""}`}
+            >
               {isLocal ? "You" : participant.name}
             </span>
           </div>
         </div>
       )}
 
-      <div className={`absolute bottom-2 left-2 flex items-center space-x-2 bg-black bg-opacity-50 px-2 py-1 rounded-md ${
-        isFocused ? "text-lg px-3 py-2" : ""
-      } ${isMobile ? "px-1 py-0.5" : ""}`}>
-        <span className={`text-white ${isFocused ? "text-base" : "text-sm"} ${isMobile ? "text-xs" : ""}`}>
+      <div
+        className={`absolute bottom-2 left-2 flex items-center space-x-2 bg-black bg-opacity-50 px-2 py-1 rounded-md ${
+          isFocused ? "text-lg px-3 py-2" : ""
+        } ${isMobile ? "px-1 py-0.5" : ""}`}
+      >
+        <span
+          className={`text-white ${isFocused ? "text-base" : "text-sm"} ${
+            isMobile ? "text-xs" : ""
+          }`}
+        >
           {isLocal ? "You" : participant.name}
         </span>
         {participant.isMuted && (
           <svg
-            className={`${isFocused ? "h-5 w-5" : "h-4 w-4"} ${isMobile ? "h-3 w-3" : ""} text-red-500`}
+            className={`${isFocused ? "h-5 w-5" : "h-4 w-4"} ${
+              isMobile ? "h-3 w-3" : ""
+            } text-red-500`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -397,8 +431,14 @@ const MeetingRoom = ({ darkMode, toggleDarkMode }) => {
       >
         <div className="flex justify-between items-center">
           <div className="flex items-center">
-            <img src="https://res.cloudinary.com/dqyqncjpd/image/upload/f_auto,q_auto/v1/Port/ldacprctyet4g5pgjl3u" className={`${isMobile ? "w-6" : "w-8"} sm:w-[8%]`} alt="" />
-            <h1 className="ml-1 sm:ml-2 text-sm sm:text-lg font-bold text-white">Quick-meet</h1>
+            <img
+              src="https://res.cloudinary.com/dqyqncjpd/image/upload/f_auto,q_auto/v1/Port/ldacprctyet4g5pgjl3u"
+              className={`${isMobile ? "w-6" : "w-8"} sm:w-[8%]`}
+              alt=""
+            />
+            <h1 className="ml-1 sm:ml-2 text-sm sm:text-lg font-bold text-white">
+              Quick-meet
+            </h1>
           </div>
           <div className="flex items-center space-x-2 sm:space-x-4">
             <div className="bg-gray-800 px-2 py-0.5 sm:px-3 sm:py-1 rounded-md">
@@ -503,7 +543,10 @@ const MeetingRoom = ({ darkMode, toggleDarkMode }) => {
 
       {/* Controls - show vertical for desktop, bottom for mobile */}
       {isMobile ? (
-        <MobileControls />
+        <MobileControls
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        />
       ) : (
         <motion.div
           initial={{ opacity: 0, x: 20 }}
@@ -513,6 +556,8 @@ const MeetingRoom = ({ darkMode, toggleDarkMode }) => {
           }}
           transition={{ duration: 0.3 }}
           className="fixed top-1/4 right-4 transform -translate-y-1/2 z-20 flex flex-col items-center space-y-4 bg-black bg-opacity-50 rounded-lg p-2"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
           <motion.button
             whileHover={{ scale: 1.1 }}
