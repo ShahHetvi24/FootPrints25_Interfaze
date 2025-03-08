@@ -1,29 +1,39 @@
-// components/MeetingRoom.js
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Fake participants data
 const generateParticipants = () => {
-  const names = ['Alex Kim', 'Taylor Smith', 'Jordan Lee', 'Casey Johnson', 'Morgan Williams'];
-  return Array(4).fill().map((_, i) => ({
-    id: i + 1,
-    name: names[i],
-    isMuted: Math.random() > 0.5,
-    isVideoOff: Math.random() > 0.7,
-    initials: names[i].split(' ').map(n => n[0]).join('')
-  }));
+  const names = [
+    "Alex Kim",
+    "Taylor Smith",
+    "Jordan Lee",
+    "Casey Johnson",
+    "Morgan Williams",
+  ];
+  return Array(4)
+    .fill()
+    .map((_, i) => ({
+      id: i + 1,
+      name: names[i],
+      isMuted: Math.random() > 0.5,
+      isVideoOff: Math.random() > 0.7,
+      initials: names[i]
+        .split(" ")
+        .map((n) => n[0])
+        .join(""),
+    }));
 };
 
 const MeetingRoom = ({ darkMode, toggleDarkMode }) => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
+
   const [participants, setParticipants] = useState([]);
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
-  const [layout, setLayout] = useState('grid'); // 'grid' or 'focus'
+  const [layout, setLayout] = useState("grid"); // 'grid' or 'focus'
   const [showControls, setShowControls] = useState(true);
   const [showChat, setShowChat] = useState(false);
 
@@ -31,68 +41,90 @@ const MeetingRoom = ({ darkMode, toggleDarkMode }) => {
     // Simulate loading participants
     const simulatedParticipants = generateParticipants();
     setParticipants(simulatedParticipants);
-    
+
     // Hide controls after 5 seconds of inactivity
     const timer = setTimeout(() => {
       setShowControls(false);
     }, 5000);
-    
+
     return () => clearTimeout(timer);
   }, []);
 
   const handleMouseMove = () => {
     setShowControls(true);
-    
+
     // Reset the timer
     const timer = setTimeout(() => {
       setShowControls(false);
     }, 5000);
-    
+
     return () => clearTimeout(timer);
   };
 
   const toggleMute = () => setIsMuted(!isMuted);
   const toggleVideo = () => setIsVideoOff(!isVideoOff);
   const toggleScreenShare = () => setIsScreenSharing(!isScreenSharing);
-  const toggleLayout = () => setLayout(layout === 'grid' ? 'focus' : 'grid');
+  const toggleLayout = () => setLayout(layout === "grid" ? "focus" : "grid");
   const toggleChat = () => setShowChat(!showChat);
-  
+
   const endCall = () => {
-    navigate('/');
+    navigate("/");
   };
 
   // Participant video component
-  const ParticipantVideo = ({ participant, isLocal = false, isFocused = false }) => (
+  const ParticipantVideo = ({
+    participant,
+    isLocal = false,
+    isFocused = false,
+  }) => (
     <motion.div
-    //   initial={{ opacity: 0, scale: 0.8 }}
-    //   animate={{ opacity: 1, scale: 1 }}
-    //   exit={{ opacity: 0, scale: 0.8 }}
-    //   transition={{ duration: 0.3 }}
       className={`relative rounded-lg overflow-hidden ${
-        isFocused ? 'col-span-2 row-span-2' : ''
+        isFocused ? "col-span-2 row-span-2" : ""
       }`}
     >
       {participant.isVideoOff ? (
         <div className="bg-gray-700 dark:bg-gray-500 w-full h-full flex items-center justify-center">
           <div className="w-20 h-20 rounded-full bg-blue-500 flex items-center justify-center">
-            <span className="text-white text-2xl font-medium">{participant.initials}</span>
+            <span className="text-white text-2xl font-medium">
+              {participant.initials}
+            </span>
           </div>
         </div>
       ) : (
         <div className="bg-gray-800 w-full h-full relative">
           {/* Fake video placeholder */}
           <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
-            <span className="text-white opacity-50">{isLocal ? 'You' : participant.name}</span>
+            <span className="text-white opacity-50">
+              {isLocal ? "You" : participant.name}
+            </span>
           </div>
         </div>
       )}
-      
+
       <div className="absolute bottom-2 left-2 flex items-center space-x-2 bg-black bg-opacity-50 px-2 py-1 rounded-md">
-        <span className="text-white text-sm">{isLocal ? 'You' : participant.name}</span>
+        <span className="text-white text-sm">
+          {isLocal ? "You" : participant.name}
+        </span>
         {participant.isMuted && (
-          <svg className="h-4 w-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path>
+          <svg
+            className="h-4 w-4 text-red-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
+            ></path>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"
+            ></path>
           </svg>
         )}
       </div>
@@ -100,24 +132,35 @@ const MeetingRoom = ({ darkMode, toggleDarkMode }) => {
   );
 
   return (
-    <div 
+    <div
       className="h-screen w-full relative bg-[var(--bg-color)] dark:bg-[var(--dark-bg-color)] flex flex-col"
       onMouseMove={handleMouseMove}
     >
       {/* Meeting information */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
-        animate={{ 
+        animate={{
           opacity: showControls ? 1 : 0,
-          y: showControls ? 0 : -20 
+          y: showControls ? 0 : -20,
         }}
         transition={{ duration: 0.3 }}
         className="absolute top-0 left-0 right-0 p-4 z-10 bg-gradient-to-b from-black to-transparent"
       >
         <div className="flex justify-between items-center">
           <div className="flex items-center">
-            <svg className="h-6 w-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+            <svg
+              className="h-6 w-6 text-blue-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+              ></path>
             </svg>
             <h1 className="ml-2 text-lg font-bold text-white">QuickMeet</h1>
           </div>
@@ -125,17 +168,39 @@ const MeetingRoom = ({ darkMode, toggleDarkMode }) => {
             <div className="bg-gray-800 px-3 py-1 rounded-md">
               <span className="text-gray-300 text-sm">Meeting ID: {id}</span>
             </div>
-            <button 
+            <button
               onClick={toggleDarkMode}
               className="p-2 rounded-full transition-colors focus:outline-none"
             >
               {darkMode ? (
-                <svg className="h-5 w-5 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                <svg
+                  className="h-5 w-5 text-yellow-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                  ></path>
                 </svg>
               ) : (
-                <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                <svg
+                  className="h-5 w-5 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                  ></path>
                 </svg>
               )}
             </button>
@@ -143,143 +208,289 @@ const MeetingRoom = ({ darkMode, toggleDarkMode }) => {
         </div>
       </motion.div>
 
+      {/* Participants info (moved from the bottom) */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{
+          opacity: showControls ? 1 : 0,
+          y: showControls ? 0 : 20,
+        }}
+        transition={{ duration: 0.3 }}
+        className="absolute top-16 right-4 z-10"
+      >
+        <div className="bg-gray-800 bg-opacity-80 rounded-lg px-2 py-1 flex items-center">
+          <span className="text-white text-xs px-2">
+            {participants.length + 1} participants
+          </span>
+          <div className="h-4 border-r border-gray-600 mx-1"></div>
+          <span className="text-white text-xs px-2">
+            {new Date().toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </span>
+        </div>
+      </motion.div>
+
       {/* Video grid */}
       <div className="flex-grow overflow-hidden flex items-center justify-center">
-        <div className={`w-full h-full p-4 ${layout === 'grid' ? 'grid grid-cols-2 md:grid-cols-3 gap-4' : 'flex justify-center items-center'}`}>
+        <div
+          className={`w-full h-full p-4 ${
+            layout === "grid"
+              ? "grid grid-cols-2 md:grid-cols-3 gap-4"
+              : "flex justify-center items-center"
+          }`}
+        >
           {/* Local participant (you) */}
           <ParticipantVideo
             participant={{
-              id: 'local',
-              name: 'You',
+              id: "local",
+              name: "You",
               isMuted: isMuted,
               isVideoOff: isVideoOff,
-              initials: 'YO'
+              initials: "YO",
             }}
             isLocal={true}
-            isFocused={layout === 'focus'}
+            isFocused={layout === "focus"}
           />
-          
+
           {/* Remote participants */}
-          {layout === 'grid' && participants.map(participant => (
-            <ParticipantVideo
-              key={participant.id}
-              participant={participant}
-            />
-          ))}
+          {layout === "grid" &&
+            participants.map((participant) => (
+              <ParticipantVideo
+                key={participant.id}
+                participant={participant}
+              />
+            ))}
         </div>
       </div>
 
-      {/* Control bar */}
+      {/* Vertical Control bar in the center */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ 
+        initial={{ opacity: 0, x: 20 }}
+        animate={{
           opacity: showControls ? 1 : 0,
-          y: showControls ? 0 : 20 
+          x: showControls ? 0 : 20,
         }}
         transition={{ duration: 0.3 }}
-        className="absolute bottom-0 left-0 right-0 p-4 z-10 bg-gradient-to-t from-black to-transparent"
+        className="fixed top-1/2 right-4 transform -translate-y-1/2 z-20 flex flex-col items-center space-y-4 bg-black bg-opacity-50 rounded-lg p-2"
       >
-        <div className="flex justify-center mb-4">
-          <div className="bg-gray-800 bg-opacity-80 rounded-lg px-1 py-1 flex items-center space-x-1">
-            <span className="text-white text-xs px-2">
-              {participants.length + 1} participants
-            </span>
-            <div className="h-4 border-r border-gray-600"></div>
-            <span className="text-white text-xs px-2">
-              {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </span>
-          </div>
-        </div>
-        
-        <div className="flex justify-center space-x-1 md:space-x-4">
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={toggleMute}
-            className={`p-3 md:p-4 rounded-full focus:outline-none ${isMuted ? 'bg-red-500 text-white' : 'bg-gray-700 text-white'}`}
-          >
-            {isMuted ? (
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path>
-              </svg>
-            ) : (
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
-              </svg>
-            )}
-          </motion.button>
-
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={toggleVideo}
-            className={`p-3 md:p-4 rounded-full focus:outline-none ${isVideoOff ? 'bg-red-500 text-white' : 'bg-gray-700 text-white'}`}
-          >
-            {isVideoOff ? (
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3l18 18"></path>
-              </svg>
-            ) : (
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-              </svg>
-            )}
-          </motion.button>
-
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={toggleScreenShare}
-            className={`p-3 md:p-4 rounded-full focus:outline-none ${isScreenSharing ? 'bg-green-500 text-white' : 'bg-gray-700 text-white'}`}
-          >
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={toggleMute}
+          className={`p-3 rounded-full focus:outline-none ${
+            isMuted ? "bg-red-500 text-white" : "bg-gray-700 text-white"
+          }`}
+        >
+          {isMuted ? (
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
+              ></path>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"
+              ></path>
             </svg>
-          </motion.button>
-
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={toggleLayout}
-            className="p-3 md:p-4 rounded-full bg-gray-700 text-white focus:outline-none"
-          >
-            {layout === 'grid' ? (
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7"></path>
-              </svg>
-            ) : (
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-              </svg>
-            )}
-          </motion.button>
-
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={toggleChat}
-            className={`p-3 md:p-4 rounded-full focus:outline-none ${showChat ? 'bg-blue-500 text-white' : 'bg-gray-700 text-white'}`}
-          >
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+          ) : (
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+              ></path>
             </svg>
-          </motion.button>
+          )}
+        </motion.button>
 
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={endCall}
-            className="p-3 md:p-4 rounded-full bg-red-600 text-white focus:outline-none"
-          >
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 8l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M5 3a2 2 0 00-2 2v1c0 8.284 6.716 15 15 15h1a2 2 0 002-2v-3.28a1 1 0 00-.684-.948l-4.493-1.498a1 1 0 00-1.21.502l-1.13 2.257a11.042 11.042 0 01-5.516-5.517l2.257-1.128a1 1 0 00.502-1.21L9.228 3.683A1 1 0 008.279 3H5z"></path>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={toggleVideo}
+          className={`p-3 rounded-full focus:outline-none ${
+            isVideoOff ? "bg-red-500 text-white" : "bg-gray-700 text-white"
+          }`}
+        >
+          {isVideoOff ? (
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              ></path>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              ></path>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M3 3l18 18"
+              ></path>
             </svg>
-          </motion.button>
-        </div>
+          ) : (
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              ></path>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              ></path>
+            </svg>
+          )}
+        </motion.button>
+
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={toggleScreenShare}
+          className={`p-3 rounded-full focus:outline-none ${
+            isScreenSharing
+              ? "bg-green-500 text-white"
+              : "bg-gray-700 text-white"
+          }`}
+        >
+          <svg
+            className="h-6 w-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+            ></path>
+          </svg>
+        </motion.button>
+
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={toggleLayout}
+          className="p-3 rounded-full bg-gray-700 text-white focus:outline-none"
+        >
+          {layout === "grid" ? (
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h16M4 18h7"
+              ></path>
+            </svg>
+          ) : (
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+              ></path>
+            </svg>
+          )}
+        </motion.button>
+
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={toggleChat}
+          className={`p-3 rounded-full focus:outline-none ${
+            showChat ? "bg-blue-500 text-white" : "bg-gray-700 text-white"
+          }`}
+        >
+          <svg
+            className="h-6 w-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+            ></path>
+          </svg>
+        </motion.button>
+
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={endCall}
+          className="p-3 rounded-full bg-red-600 text-white focus:outline-none"
+        >
+          <svg
+            className="h-6 w-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M16 8l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M5 3a2 2 0 00-2 2v1c0 8.284 6.716 15 15 15h1a2 2 0 002-2v-3.28a1 1 0 00-.684-.948l-4.493-1.498a1 1 0 00-1.21.502l-1.13 2.257a11.042 11.042 0 01-5.516-5.517l2.257-1.128a1 1 0 00.502-1.21L9.228 3.683A1 1 0 008.279 3H5z"
+            ></path>
+          </svg>
+        </motion.button>
       </motion.div>
 
       {/* Chat sidebar */}
@@ -294,22 +505,33 @@ const MeetingRoom = ({ darkMode, toggleDarkMode }) => {
           >
             <div className="p-4 border-b border-gray-700 flex justify-between items-center">
               <h3 className="text-white font-medium">Meeting Chat</h3>
-              <button 
+              <button
                 onClick={toggleChat}
                 className="text-gray-400 hover:text-white focus:outline-none"
               >
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  ></path>
                 </svg>
               </button>
             </div>
-            
+
             <div className="flex-grow p-4 overflow-y-auto">
               <div className="text-center text-gray-500 text-sm my-4">
                 Chat messages will appear here
               </div>
             </div>
-            
+
             <div className="p-4 border-t border-gray-700">
               <div className="flex">
                 <input
@@ -318,8 +540,19 @@ const MeetingRoom = ({ darkMode, toggleDarkMode }) => {
                   className="flex-grow px-4 py-2 bg-gray-700 text-white rounded-l-md focus:outline-none"
                 />
                 <button className="bg-blue-500 text-white px-4 rounded-r-md">
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M14 5l7 7m0 0l-7 7m7-7H3"
+                    ></path>
                   </svg>
                 </button>
               </div>

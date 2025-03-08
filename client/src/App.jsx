@@ -13,9 +13,9 @@ function App() {
   };
 
   return (
-    <div className={darkMode ? 'dark' : ''}>
+    <div className={darkMode ? 'dark m-0' : 'm-0'}>
       <Router>
-        <div className="min-h-screen transition-colors duration-300 bg-gray-50 dark:bg-gray-900">
+        <div className="w-screen m-0 transition-colors duration-300 bg-gray-50 dark:bg-gray-900">
           <Routes>
             <Route path="/" element={<HomePage darkMode={darkMode} toggleDarkMode={toggleDarkMode} />} />
             <Route path="/meeting/:id" element={<MeetingRoom darkMode={darkMode} toggleDarkMode={toggleDarkMode} />} />
