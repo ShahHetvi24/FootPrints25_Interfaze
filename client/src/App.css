@@ -1,0 +1,122 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --transition-duration: 300ms;
+  --dark-bg-color: #000;
+  --bg-color: #c4c4c4;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 100, 100, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 100, 100, 0.7);
+}
+
+/* Video Tile Animations */
+.video-tile {
+  transition: all var(--transition-duration) ease;
+}
+
+/* .video-tile:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+} */
+
+/* Control Button Transitions */
+.control-button {
+  transition: all var(--transition-duration) ease;
+}
+
+/* Meeting Grid Layout Adjustments */
+@media (max-width: 640px) {
+  .grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .grid-layout {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1025px) {
+  .grid-layout {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Smooth Fade Transitions */
+.fade-in {
+  animation: fadeIn var(--transition-duration) ease forwards;
+}
+
+.fade-out {
+  animation: fadeOut var(--transition-duration) ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Placeholder Avatar Styling */
+.avatar-placeholder {
+  background: linear-gradient(45deg, #3498db, #2980b9);
+  color: white;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  text-transform: uppercase;
+}
+
+/* Control Bar Button Effects */
+/* .control-bar-button {
+  transition: background-color 0.2s, transform 0.1s;
+} */
+
+/* .control-bar-button:hover {
+  transform: translateY(-2px);
+} */
+
+.control-bar-button:active {
+  transform: translateY(0);
+}
+
+/* Chat Input Focus Effects */
+.chat-input:focus {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+/* Make Images Responsive */
+img {
+  max-width: 100%;
+  height: auto;
+}
